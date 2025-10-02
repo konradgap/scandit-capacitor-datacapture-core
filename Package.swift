@@ -16,7 +16,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "7.0.0"),
-        .package(url: "https://github.com/Scandit/scandit-datacapture-frameworks-core.git", exact: Version(stringLiteral: version))
+        .package(url: "https://github.com/konradgap/scandit-datacapture-frameworks-core.git", exact: Version(stringLiteral: version))
     ],
     targets: [
         // Objective-C target for VolumeButtonObserver
