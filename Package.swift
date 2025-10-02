@@ -1,19 +1,10 @@
 // swift-tools-version: 5.9
 import PackageDescription
-import Foundation
 
-// Read version from package.json
-func getVersion() -> String {
-    let packageJSONPath = Context.packageDirectory + "/package.json"
-    guard let data = try? Data(contentsOf: URL(fileURLWithPath: packageJSONPath)),
-          let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-          let version = json["version"] as? String else {
-        fatalError("Could not read version from package.json at \(packageJSONPath)")
-    }
-    return version
-}
-
-let version = getVersion()
+// Version is set during release process
+// When developing locally in monorepo, the version is read from package.json/info.json
+// When published to GitHub, the version must be hardcoded
+let version = "8.1.0-beta.1-SNAPSHOT"
 
 let package = Package(
     name: "ScanditCapacitorDatacaptureCore",
