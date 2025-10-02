@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "allowUnreachableCode": false,
+    "declaration": true,
+    "esModuleInterop": true,
+    "lib": [
+      "dom",
+      "es2015"
+    ],
+    "module": "es2015",
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "strictPropertyInitialization": false,
+    "noEmitOnError": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": true,
+    "outDir": "dist/dts",
+    "pretty": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2015"
+  },
+  "include": ["src/**/*.ts"]
+}

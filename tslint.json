@@ -1,0 +1,68 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsEnable": false,
+    "rules": {
+        "quotemark": {
+            "options": ["single", "avoid-escape"],
+            "severity": "warn"
+        },
+        "ban-types": false,
+        "whitespace": [true, "check-module"],
+        "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
+        "interface-name": false,
+        "object-literal-sort-keys": false,
+        "max-classes-per-file": false,
+        "arrow-parens": [true, "ban-single-arg-parens"],
+        "member-ordering": [
+            true,
+            {
+                "order": [{
+                        "name": "static-field",
+                        "kinds": [
+                            "public-static-field",
+                            "protected-static-field",
+                            "private-static-field"
+                        ]
+                    },
+                    {
+                        "name": "instance-field",
+                        "kinds": [
+                            "public-instance-field",
+                            "protected-instance-field",
+                            "private-instance-field"
+                        ]
+                    },
+                    {
+                        "name": "static-method",
+                        "kinds": [
+                            "public-static-method",
+                            "protected-static-method",
+                            "private-static-method"
+                        ]
+                    },
+                    {
+                        "name": "constructor",
+                        "kinds": [
+                            "public-constructor",
+                            "protected-constructor",
+                            "private-constructor"
+                        ]
+                    },
+                    {
+                        "name": "instance-method",
+                        "kinds": [
+                            "public-instance-method",
+                            "protected-instance-method",
+                            "private-instance-method"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "unified-signatures": false
+    },
+    "rulesDirectory": []
+}

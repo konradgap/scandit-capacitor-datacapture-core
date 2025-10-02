@@ -1,0 +1,132 @@
+import com.scandit.datacapture.gradle.CodeQualityPlugin
+
+ext {
+    androidxCoreVersion = project.hasProperty('androidxCoreVersion') ? rootProject.ext.androidxCoreVersion : '1.10.0'
+    androidxAppCompatVersion = project.hasProperty('androidxAppCompatVersion') ? rootProject.ext.androidxAppCompatVersion : '1.6.1'
+    cordovaAndroidVersion =  project.hasProperty('cordovaAndroidVersion') ? rootProject.ext.cordovaAndroidVersion : '10.1.1'
+}
+
+buildscript {
+    def getFrameworksFile = { String rootDir ->
+        def currentDir = new File(rootDir)
+
+        while (currentDir != null) {
+            def frameworksFile = new File(currentDir, "common/frameworks.gradle")
+            if (frameworksFile.exists()) {
+                return frameworksFile.absolutePath
+            }
+            currentDir = currentDir.getParentFile() // Move up one level
+        }
+
+        return null
+    }
+
+    def retrieveCapacitorCompatibility = {
+        def appModule = rootProject.findProject(":app")
+        if (appModule == null) {
+            return
+        }
+
+        def file = appModule.file("capacitor.build.gradle")
+        if (file.exists()) {
+            def content = file.text
+
+            def sourceCompatibilityMatch = content =~ /sourceCompatibility\s+JavaVersion.VERSION_(\d+)/
+            def targetCompatibilityMatch = content =~ /targetCompatibility\s+JavaVersion.VERSION_(\d+)/
+
+            if (sourceCompatibilityMatch) {
+                ext.rootSourceCompatibility = JavaVersion.toVersion(sourceCompatibilityMatch[0][1])
+            } else {
+                ext.rootSourceCompatibility = JavaVersion.VERSION_17
+            }
+
+            if (targetCompatibilityMatch) {
+                ext.rootTargetCompatibility = JavaVersion.toVersion(targetCompatibilityMatch[0][1])
+            } else {
+                ext.rootTargetCompatibility = JavaVersion.VERSION_17
+            }
+        }
+    }
+
+    ext {
+        rootSourceCompatibility = JavaVersion.VERSION_17
+        rootTargetCompatibility = JavaVersion.VERSION_17
+    }
+
+    // Need this check to build samples and debug app from source folders
+    def common_gradle_script = getFrameworksFile(rootProject.projectDir.path)
+    if (common_gradle_script != null) {
+        apply from: common_gradle_script
+    }
+
+    // Retrieve
+    retrieveCapacitorCompatibility()
+
+    repositories repos
+    dependencies {
+        classpath libs.kotlin.gradle.new
+        classpath libs.gradle.agp.new
+        classpath libs.gradle.code.quality
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: CodeQualityPlugin
+
+scanditCodeQuality {
+    detekt {
+        forceTaskConfiguration = true
+    }
+}
+
+android {
+    namespace "com.scandit.capacitor.datacapture.core"
+    compileSdk project.hasProperty('compileSdkVersion') ? rootProject.ext.compileSdkVersion : 33
+    defaultConfig {
+        minSdk project.hasProperty('minSdkVersion') ? rootProject.ext.minSdkVersion : 24
+        targetSdk project.hasProperty('targetSdkVersion') ? rootProject.ext.targetSdkVersion : 33
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+    compileOptions {
+        sourceCompatibility = rootSourceCompatibility
+        targetCompatibility = rootTargetCompatibility
+    }
+    kotlinOptions {
+        jvmTarget = rootTargetCompatibility.toString()
+    }
+}
+
+// Need this check to build samples and debug app from source folders
+if (new File("${rootProject.projectDir}/../../../common/frameworks.gradle").exists()) {
+    apply from: "${rootProject.projectDir}/../../../common/frameworks.gradle"
+} else {
+    apply from: "${rootProject.projectDir}/../../../../../common/frameworks.gradle"
+}
+repositories repos
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    if (findProject(':scandit-datacapture-frameworks-core') != null) {
+        api project(":scandit-datacapture-frameworks-core")
+    } else {
+        api "com.scandit.datacapture.frameworks:core:$global_sdk_version"
+    }
+
+    implementation project(':capacitor-android')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.core:core-ktx:$androidxCoreVersion"
+}
+
+
